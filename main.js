@@ -1,32 +1,45 @@
+noseX=0;
+noseY=0;
+ fancy_mustache = loadImage('handlebar-moustache-clip-art-mustache.jpg')
+function preload() {
+
+}
+
 function setup() {
-    canvas=createCanvas(300,300);
+    canvas= createCanvas(300, 300);
     canvas.center();
-    video=createCapture(VIDEO);
+    video = createCapture(VIDEO)
+    video.size(300,300);
     video.hide();
-    classifier=ml5.imageClassifier('https://teachablemachine.withgoogle.com/models/OiWMlZvtI/model.json',modelLoaded);
+
+    poseNet = ml5.poseNet(video, modelLoaded);
+    poseNet.on('pose' , gotPoses);
 }
 
-function modelLoaded()
+function modelLoaded() 
 {
-    console.log('Model Loaded !');
+  console. log('PoseNet Is Initialized');
 }
 
-function draw() 
+function gotPoses() 
 {
-    image(video,0,0,300,300);
-    classifier.classify(video, gotResult);
+    if(results.length > 0)
+    {
+        console.log(results)
+        noseX = results[0].pose.nose.x;
+        noseY = results[0].pose.nose.y;
+        console.log("nose x =" + results [0].pose.nose.x);
+        console.log("nose y =" + results [0].pose.nose.y);
+    }
 }
 
-function gotResult(error,results)
-{
-  if(error) 
-  {
-     console.error(error);
-  }
-else
-{
- console.log(results);
- document.getElementById("result_object_name").innerHTML=results[0].label;
- document.getElementById("result_object_accuracy").innerHTML=results[0].confidence.toFixed;
+function draw() {
+ image(video, 0, 0, 300, 300)
+ fill(255,0,0)
+ stroke(255,0,0)
+ image(fancy_mustache, noseX, noseY, 30,30)
 }
+
+function take_snapshot(){
+    save('myFilterImage.png');
 }
